@@ -14,6 +14,14 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// Lista de palavras-chave relacionadas a cachorros
+const dogKeywords = ['cachorro', 'cão', 'animal de estimação', 'pet'];
+
+function isAboutDogs(prompt) {
+  const lowerPrompt = prompt.toLowerCase();
+  return dogKeywords.some(keyword => lowerPrompt.includes(keyword));
+}
+
 app.get('/', async (req, res) => {
   res.status(200).send({
     message: 'Olá, bem-vindo! Este é um assistente sobre cachorros.'
@@ -22,10 +30,10 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res) => {
   try {
-    const prompt = req.body.prompt.toLowerCase();
+    const prompt = req.body.prompt;
 
     // Verifique se o prompt está relacionado a cachorros
-    if (prompt.includes('cachorro') || prompt.includes('cão') || prompt.includes('animal de estimação')) {
+    if (isAboutDogs(prompt)) {
       const response = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: `${prompt}`,
